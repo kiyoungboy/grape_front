@@ -10,10 +10,10 @@ export const useEmailAuth = () => {
         setLoading(true);
         setError(null);
         try{
-            const massage = await requestEmailCode(email);
-            return massage;
+            const message = await requestEmailCode(email);
+            return message;
         }catch(e: any){
-            setError(e.massage ?? '이메일 전송 실패');
+            setError(e.message ?? '이메일 전송 실패');
             throw e;
         } finally {
             setLoading(false);
@@ -24,12 +24,12 @@ export const useEmailAuth = () => {
         setLoading(true);
         setError(null);
         try{
-            const massage = await verifyEmailCode(email, code);
+            const message = await verifyEmailCode(email, code);
             setVerified(true);
-            return massage;
+            return message;
         }catch(e: any){
             setVerified(false);
-            setError(e.massage ?? '인증 실패');
+            setError(e.message ?? '인증 실패');
             throw e;
         } finally {
             setLoading(false);

@@ -1,19 +1,21 @@
 import axios from 'axios'
-import { StringSchema } from 'yup';
 
 const API_URL = 'http://localhost:8181/module/auth/';
 
 /* 1. 이메일 인증번호 요청 */
 export const requestEmailCode = async (email: string): Promise<string> => {
-    const params = new URLSearchParams({ email });
-    const response = await axios.post(API_URL + 'email-request?' + params.toString());
+    const response = await axios.post(API_URL + 'email-request',{
+        email,
+    });
     return response.data; 
 };
 
 /* 2. 이메일 인증번호 검증*/
 export const verifyEmailCode = async(email: string, code: string): Promise<string> => {
-    const params = new URLSearchParams({ email, code })
-    const response = await axios.post(API_URL + 'email-verify?' + params.toString());
+    const response = await axios.post(API_URL + 'email-verify', {
+        email,
+        code,
+    });
     return response.data;
 }
 
@@ -28,9 +30,10 @@ export const verifyToken = async(token: string, tokenType: 'ACCESS' | 'REFRESH')
             headers['Token-Type'] = 'REFRESH';
         }
         
-        const response = await axios.post(API_URL + 'token-verify', {}, {
-            headers
-        });
+        const response = await axios.post(API_URL + 'token-verify', 
+            { tokenType }, 
+            { headers }
+        );
         return response.data === 'ok';
     }catch {
         return false;
