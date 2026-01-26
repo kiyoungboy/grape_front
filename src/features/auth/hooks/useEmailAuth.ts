@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { requestEmailCode, verifyEmailCode } from '../services/IAuthService';
+import { requestEmailCode, verifyEmailCode } from '../services/AuthService';
 
 export const useEmailAuth = () => {
     const [loading, setLoading] = useState(false);
