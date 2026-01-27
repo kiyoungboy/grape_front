@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTokenVerification } from '../../auth/hooks/useTokenAuth';
-import { signinApi } from './SigninService';
+import { SigninApi } from './SigninService';
 import { useNavigate } from 'react-router-dom';
 
 export const useSignin = () => {
@@ -14,7 +14,7 @@ export const useSignin = () => {
         setError('');
 
         try{
-            const tokens = await signinApi.signin(userId, password);
+            const tokens = await SigninApi.signin(userId, password);
 
             setLoginTokens(tokens.accessToken, tokens.refreshToken);
 

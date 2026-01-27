@@ -3,7 +3,7 @@ import axios from 'axios'
 const API_URL = 'http://localhost:8181/module/auth/';
 
 /* 1. 이메일 인증번호 요청 */
-export const requestEmailCode = async (email: string): Promise<string> => {
+export const RequestEmailCode = async (email: string): Promise<string> => {
     const response = await axios.post(API_URL + 'email-request',{
         email,
     });
@@ -11,7 +11,7 @@ export const requestEmailCode = async (email: string): Promise<string> => {
 };
 
 /* 2. 이메일 인증번호 검증*/
-export const verifyEmailCode = async(email: string, code: string): Promise<string> => {
+export const VerifyEmailCode = async(email: string, code: string): Promise<string> => {
     const response = await axios.post(API_URL + 'email-verify', {
         email,
         code,
@@ -20,7 +20,7 @@ export const verifyEmailCode = async(email: string, code: string): Promise<strin
 }
 
 /* 3. 토큰 검증(Access/Refresh Token 유효성 확인) */
-export const verifyToken = async(token: string, tokenType: 'ACCESS' | 'REFRESH'): Promise<boolean> => {
+export const VerifyToken = async(token: string, tokenType: 'ACCESS' | 'REFRESH'): Promise<boolean> => {
     try{
         const headers: Record<string, string> = {
             Authorization: `Bearer ${token}`

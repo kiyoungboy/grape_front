@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { requestEmailCode, verifyEmailCode } from '../services/AuthService';
+import { RequestEmailCode, VerifyEmailCode } from '../services/AuthService';
 
 export const useEmailAuth = () => {
     const [loading, setLoading] = useState(false);
@@ -10,7 +10,7 @@ export const useEmailAuth = () => {
         setLoading(true);
         setError(null);
         try{
-            const message = await requestEmailCode(email);
+            const message = await RequestEmailCode(email);
             return message;
         }catch(e: any){
             setError(e.message ?? '이메일 전송 실패');
@@ -24,7 +24,7 @@ export const useEmailAuth = () => {
         setLoading(true);
         setError(null);
         try{
-            const message = await verifyEmailCode(email, code);
+            const message = await VerifyEmailCode(email, code);
             setVerified(true);
             return message;
         }catch(e: any){

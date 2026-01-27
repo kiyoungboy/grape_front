@@ -11,7 +11,7 @@ export interface FindIdResponse {
     error?: string;
 }
 
-export const findIdApi = {
+export const FindIdApi = {
     async findId(email: string): Promise<FindIdResponse> {
         const response = await axios.post<FindIdResponse & { error?: string }>(
             API_URL + 'find-id',

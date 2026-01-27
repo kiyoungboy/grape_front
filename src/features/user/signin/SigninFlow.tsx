@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useSignin } from './useSignin';
 
-export const signinFlow = () => {
+export const SigninFlow = () => {
     const [userId, setUserId] = useState('');
     const [password, setPassword] = useState('');
     const { signin, isLoading, error } = useSignin();

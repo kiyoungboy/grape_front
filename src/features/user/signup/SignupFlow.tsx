@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useSignup, SignupForm } from './useSignup';
 
-export const signupFlow = () => {
+export const SignupFlow = () => {
     const [form, setForm] = useState<SignupForm>({
         userId: '',
         userPw: '',

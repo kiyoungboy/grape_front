@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { verifyToken } from '../services/AuthService';
+import { VerifyToken } from '../services/AuthService';
 import axios from 'axios';
 
 const API_URL = 'http://localhost:8181/module/auth/';
@@ -46,7 +46,7 @@ export const useTokenVerification = () => {
 
         setIsLoading(true);
         try{
-            const isTokenValid = await verifyToken(accessToken, 'ACCESS');
+            const isTokenValid = await VerifyToken(accessToken, 'ACCESS');
             setIsAccessTokenValid(isTokenValid);
 
             if(!isTokenValid){
@@ -67,7 +67,7 @@ export const useTokenVerification = () => {
 
         setIsLoading(true);
         try{
-            const isTokenValid = await verifyToken(refreshToken, 'REFRESH');
+            const isTokenValid = await VerifyToken(refreshToken, 'REFRESH');
             setIsRefreshTokenValid(isTokenValid);
             return isTokenValid;
         } finally{

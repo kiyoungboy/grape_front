@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { signupApi } from "./SignupService";
+import { SignupApi } from "./SignupService";
 import { useSignin } from "../signin/useSignin";
 
 export interface SignupForm {
@@ -19,7 +19,7 @@ export const useSignup = () => {
         setError('');
 
         try{
-            await signupApi.signup(form);
+            await SignupApi.signup(form);
 
             const success = await signin(form.userId, form.userPw);
             return success;

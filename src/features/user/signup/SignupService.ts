@@ -1,5 +1,5 @@
 import axios from "axios";
-import { signinApi } from "../signin/SigninService";
+import { SigninApi } from "../signin/SigninService";
 
 const API_URL = 'http://localhost:8181/module/user/'
 
@@ -10,7 +10,7 @@ export interface SignupRequest {
     userEmail: string;
 }
 
-export const signupApi = {
+export const SignupApi = {
     async signup(data: SignupRequest): Promise<{ message: string }> {
         const response = await axios.post<{ message?: string; error?: string }>(
             API_URL + 'signup',
@@ -25,6 +25,6 @@ export const signupApi = {
     },
 
     async loginAfterSignup(userId: string, password: string) {
-        return signinApi.signin(userId, password);
+        return SigninApi.signin(userId, password);
     }
 };

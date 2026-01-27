@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { findIdApi } from "./FindUserIdService";
+import { FindIdApi } from "./FindUserIdService";
 
 export const useFindId = () => {
     const [email, setEmail] = useState('');
@@ -13,7 +13,7 @@ export const useFindId = () => {
         setMaskedUserId('');
 
         try{
-            const response = await findIdApi.findId(email);
+            const response = await FindIdApi.findId(email);
             setMaskedUserId(response.maskedUserId);
             return true;
         } catch(error: any){

@@ -12,7 +12,7 @@ interface TokenDto {
     refreshToken: string;
 }
 
-export const signinApi = {
+export const SigninApi = {
     async signin(userId: string, password: string): Promise<TokenDto>{
         const response = await axios.post<{ accessToken: string; refreshToken: string; message:string }>(
             API_URL + 'signin',

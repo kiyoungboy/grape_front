@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { findPwApi } from './FindUserPwService'
+import { FindPwApi } from './FindUserPwService'
 
 type Step = 'EMAIL' | 'CODE' | 'NEW_PW' | 'DONE';
 
@@ -25,7 +25,7 @@ export const useFindPw = () => {
         setError('');
 
         try{
-            await findPwApi.sendVerificationCode(email);
+            await FindPwApi.sendVerificationCode(email);
             setStep('CODE');
             return true;
         } catch (error: any){
@@ -40,7 +40,7 @@ export const useFindPw = () => {
         setIsLoading(true);
         setError('');
         try{
-            await findPwApi.verifyCode(email, code);
+            await FindPwApi.verifyCode(email, code);
             setStep('NEW_PW');
             return true;
         } catch (error: any) {
@@ -67,7 +67,7 @@ export const useFindPw = () => {
         }
 
         try{
-            await findPwApi.resetPassword({
+            await FindPwApi.resetPassword({
                 userId,
                 email,
                 newPassword

@@ -1,6 +1,6 @@
 import { useFindId } from "./useFindId";
 
-export const findIdFlow = () => {
+export const FindIdFlow = () => {
     const {
         email,
         setEmail,

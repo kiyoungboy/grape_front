@@ -1,5 +1,5 @@
 import axios from "axios";
-import { requestEmailCode, verifyEmailCode } from "../../auth/services/AuthService";
+import { RequestEmailCode, VerifyEmailCode } from "../../auth/services/AuthService";
 
 const API_URL = 'http://localhost:8181/module/user/';
 
@@ -9,13 +9,13 @@ export interface FindPwRequest {
     email: string;
 }
 
-export const findPwApi = {
+export const FindPwApi = {
     async sendVerificationCode(email: string): Promise<void> {
-        await requestEmailCode(email);
+        await RequestEmailCode(email);
     },
 
     async verifyCode(email: string, code: string): Promise<void> {
-        await verifyEmailCode(email, code);
+        await VerifyEmailCode(email, code);
     },
 
     async resetPassword(request: FindPwRequest): Promise<{ message: string }> {
