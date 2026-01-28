@@ -3,19 +3,21 @@ import axios from "axios";
 const API_URL = 'http://localhost:8181/module/user/'
 
 export const SignoutApi = {
-    async singoutServer(refreshToken: string): Promise<void> {
-        try{
-            await axios.post(
-                API_URL + 'signout',
-                {},
-                {
-                    headers: {
-                        'Refresh-Token': refreshToken
-                    }
+    async signoutToServer(refreshToken: string): Promise<{ message: string }> {
+        const response = await axios.post< { message?: string; error?: string }>(
+            API_URL + 'signout',
+            {},
+            {
+                headers: {
+                    'Refresh-Token': refreshToken
                 }
-            );
-        } catch(error) {
-            console.log('서버 로그아웃 실패(이미 삭제가능성)')
+            }
+        );
+
+        if(response.data.error){
+            throw new Error(response.data.error);
         }
+
+        return { message: response.data.message || 'success' };
     }
 };

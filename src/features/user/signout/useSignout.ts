@@ -9,7 +9,7 @@ export const useSignout = () => {
     const signout = async () => {
         try{
             if(refreshToken){
-                await SignoutApi.singoutServer(refreshToken);
+                await SignoutApi.signoutToServer(refreshToken);
             }
         } catch(error){
             console.warn('서버 로그아웃 실패:', error);
