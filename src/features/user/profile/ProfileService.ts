@@ -1,6 +1,6 @@
-import axios from "axios";
+import apiClient from "../../../services/axiosConfig";
 
-const API_URL = 'http://localhost:8181/module/user/'
+const API_URL = 'api/user/'
 
 export interface ProfileResponse {
     userId: string;
@@ -16,7 +16,7 @@ export interface UpdateProfileRequest {
 
 export const ProfileApi = {
     async getProfile(): Promise<ProfileResponse> {
-        const response = await axios.get<ProfileResponse>(API_URL + 'profile', {
+        const response = await apiClient.get<ProfileResponse>(API_URL + 'profile', {
             headers: {
                 Authorization: `Bearer ${localStorage.getItem('ACCESS_TOKEN_KEY')}`
             }
@@ -25,7 +25,7 @@ export const ProfileApi = {
     },
 
     async updateProfile(data: UpdateProfileRequest): Promise<{ message: string }> {
-        const response = await axios.put<{ message?: string; error?: string }>(
+        const response = await apiClient.put<{ message?: string; error?: string }>(
             API_URL + 'profile',
             data,
             {

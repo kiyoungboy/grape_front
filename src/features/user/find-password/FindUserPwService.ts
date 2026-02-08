@@ -1,7 +1,7 @@
-import axios from "axios";
 import { RequestEmailCode, VerifyEmailCode } from "../../auth/services/AuthService";
+import apiClient from "../../../services/axiosConfig";
 
-const API_URL = 'http://localhost:8181/module/user/';
+const API_URL = 'api/user/';
 
 export interface FindPwRequest {
     userId: string;
@@ -19,7 +19,7 @@ export const FindPwApi = {
     },
 
     async resetPassword(request: FindPwRequest): Promise<{ message: string }> {
-        const response = await axios.post<{ message?: string; error?: string }>(
+        const response = await apiClient.post<{ message?: string; error?: string }>(
             API_URL + 'find-pw',
             {
                 userId: request.userId,

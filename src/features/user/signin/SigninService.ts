@@ -1,6 +1,6 @@
-import axios from "axios";
+import apiClient from "../../../services/axiosConfig";
 
-const API_URL = 'http://localhost:8181/module/user/'
+const API_URL = 'api/user/'
 
 interface SigninRequest {
     userId: string;
@@ -14,7 +14,7 @@ interface TokenDto {
 
 export const SigninApi = {
     async signin(userId: string, password: string): Promise<TokenDto>{
-        const response = await axios.post<{ accessToken: string; refreshToken: string; message:string }>(
+        const response = await apiClient.post<{ accessToken: string; refreshToken: string; message:string }>(
             API_URL + 'signin',
             { userId, password } as SigninRequest
         );

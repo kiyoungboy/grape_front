@@ -38,7 +38,7 @@ function AppContent() {
         <Route path="/login" element={<SigninFlow />} />
         <Route path="/signup" element={<SignupFlow />} />
         <Route path="/find-id" element={<FindIdFlow />} />
-        <Route path="/reset-password" element={<FindPwFlow />} />
+        <Route path="/find-pw" element={<FindPwFlow />} />
 
         {/* 보호된 페이지 */}
         <Route

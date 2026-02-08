@@ -17,14 +17,9 @@ export const useSignin = () => {
             const tokens = await SigninApi.signin(userId, password);
 
             setLoginTokens(tokens.accessToken, tokens.refreshToken);
-
-            const isValid = await ensureValidToken();
-            if(isValid){
-                navigate('/dashboard');
-                return true;
-            }
-
-            throw new Error('토큰 검증 실패');
+            navigate('/dashboard');
+            return true;
+            
         } catch (error: any){
             setError(error.message || '로그인 실패');
             return false;

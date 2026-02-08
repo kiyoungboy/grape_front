@@ -1,6 +1,6 @@
-import axios from "axios";
+import apiClient from "../../../services/axiosConfig";
 
-const API_URL = 'http://localhost:8181/module/user/'
+const API_URL = 'api/user/'
 
 export interface FindIdRequest {
     email: string;
@@ -13,7 +13,7 @@ export interface FindIdResponse {
 
 export const FindIdApi = {
     async findId(email: string): Promise<FindIdResponse> {
-        const response = await axios.post<FindIdResponse & { error?: string }>(
+        const response = await apiClient.post<FindIdResponse & { error?: string }>(
             API_URL + 'find-id',
             { email } as FindIdRequest
         );

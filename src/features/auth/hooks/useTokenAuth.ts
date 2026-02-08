@@ -1,8 +1,8 @@
 import { useState, useCallback } from 'react';
 import { VerifyToken } from '../services/AuthService';
-import axios from 'axios';
+import apiClient from '../../../services/axiosConfig';
 
-const API_URL = 'http://localhost:8181/module/auth/';
+const API_URL = 'api/auth/';
 
 export const useTokenVerification = () => {
     const [accessToken, setAccessToken] = useState<string | null>(
@@ -84,7 +84,7 @@ export const useTokenVerification = () => {
         setIsLoading(true);
         try{
             /*백엔드 /module/auth/ 호출 */
-            const response = await axios.post(API_URL + 'update-token', {}, {
+            const response = await apiClient.post(API_URL + 'update-token', {}, {
                 headers: {
                     'Refresh-Token': refreshToken 
                 }

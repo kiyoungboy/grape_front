@@ -1,10 +1,10 @@
-import axios from "axios";
+import apiClient from "../../../services/axiosConfig";
 
-const API_URL = 'http://localhost:8181/module/user/'
+const API_URL = 'api/user/'
 
 export const SignoutApi = {
     async signoutToServer(refreshToken: string): Promise<{ message: string }> {
-        const response = await axios.post< { message?: string; error?: string }>(
+        const response = await apiClient.post< { message?: string; error?: string }>(
             API_URL + 'signout',
             {},
             {
