@@ -1,32 +1,20 @@
-import { useState } from 'react';
-import { useTokenVerification } from '../../auth/hooks/useTokenAuth';
 import { SigninApi } from './SigninService';
 import { useNavigate } from 'react-router-dom';
+import { useTokenVerification } from '../../auth/hooks/useTokenAuth';
 
 export const useSignin = () => {
-    const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState('');
-    const { setLoginTokens, ensureValidToken } = useTokenVerification();
+    const { setLoginTokens } = useTokenVerification();
     const navigate = useNavigate();
 
     const signin = async (userId: string, password: string): Promise<boolean> => {
-        setIsLoading(true);
-        setError('');
-
         try{
             const tokens = await SigninApi.signin(userId, password);
-
-            setLoginTokens(tokens.accessToken, tokens.refreshToken);
-            navigate('/dashboard');
+            setLoginTokens(tokens.accessToken);
+            navigate('/');
             return true;
-            
-        } catch (error: any){
-            setError(error.message || '로그인 실패');
-            return false;
-        } finally {
-            setIsLoading(false);
+        }catch (error) {
+            return false
         }
-    };
-
-    return { signin, isLoading, error };
+    }
+    return { signin };
 }

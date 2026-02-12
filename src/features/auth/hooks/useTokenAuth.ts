@@ -1,136 +1,67 @@
-import { useState, useCallback } from 'react';
-import { VerifyToken } from '../services/AuthService';
+import { useState, useCallback, useEffect } from 'react';
 import apiClient from '../../../services/axiosConfig';
+import { isTokenExpiringSoon } from '../../../utils/jwt';
+import { useAuth } from '../context/AuthContext';
 
 const API_URL = 'api/auth/';
 
 export const useTokenVerification = () => {
-    const [accessToken, setAccessToken] = useState<string | null>(
-        localStorage.getItem('ACCESS_TOKEN_KEY')
-    );
-    const [isAccessTokenValid, setIsAccessTokenValid] = useState(false);
-
-    const [refreshToken, setRefreshToken] = useState<string | null>(
-        localStorage.getItem("REFRESH_TOKEN_KEY")
-    );
-    const [isRefreshTokenValid, setIsRefreshTokenValid] = useState(false);
-
+    const { accessToken, setAccessToken } = useAuth();
     const [isLoading, setIsLoading] = useState(false);
 
-    const setLoginTokens = useCallback((
-        newAccessToken: string,
-        newRefreshToken: string
-    ) => {
-        localStorage.setItem('ACCESS_TOKEN_KEY', newAccessToken);
-        localStorage.setItem('REFRESH_TOKEN_KEY', newRefreshToken);
 
+    const setLoginTokens = useCallback((
+        newAccessToken: string
+    ) => {
         setAccessToken(newAccessToken);
-        setRefreshToken(newRefreshToken);
-    }, []);
+        localStorage.setItem('ACCESS_TOKEN', newAccessToken);
+    }, [setAccessToken]);
 
     const clearTokens = useCallback(() => {
-        localStorage.removeItem('ACCESS_TOKEN_KEY');
-        localStorage.removeItem('REFRESH_TOKEN_KEY');
-
         setAccessToken(null);
-        setRefreshToken(null);
-        setIsAccessTokenValid(false);
-        setIsRefreshTokenValid(false);
-    }, []);
+        localStorage.removeItem('ACCESS_TOKEN');
+    }, [setAccessToken]);
 
-    const validateAccessToken = useCallback(async (): Promise<boolean> =>{
-        if(!accessToken) {
-            setIsAccessTokenValid(false);
-            return false;
-        }
+    const isAccessTokenValid = accessToken ? !isTokenExpiringSoon(accessToken) : false;
 
+    const refreshAccessToken = useCallback(async ():Promise<boolean> => {
         setIsLoading(true);
         try{
-            const isTokenValid = await VerifyToken(accessToken, 'ACCESS');
-            setIsAccessTokenValid(isTokenValid);
+            const response = await apiClient.post(API_URL + 'refresh-token', {});
+            const newAccessToken = (response.data as any).accessToken;
+            localStorage.setItem('ACCESS_TOKEN', newAccessToken);
 
-            if(!isTokenValid){
-                clearTokens();
-            }
+            if(!newAccessToken) return false;
 
-            return isTokenValid;
-        } finally {
-            setIsLoading(false);
-        }
-    }, [accessToken, clearTokens]);
-
-    const validateRefreshToken = useCallback(async (): Promise<boolean> => {
-        if(!refreshToken){
-            setIsRefreshTokenValid(false);
+            setAccessToken(newAccessToken);
+            return true;
+        }catch{
+            clearTokens();
             return false;
-        }
-
-        setIsLoading(true);
-        try{
-            const isTokenValid = await VerifyToken(refreshToken, 'REFRESH');
-            setIsRefreshTokenValid(isTokenValid);
-            return isTokenValid;
         } finally{
             setIsLoading(false);
         }
-    }, [refreshToken, clearTokens]);
+    }, [clearTokens]);
 
-    const updateAccessToken = useCallback(async (): Promise<string | null> => {
-        if(!refreshToken || !await validateRefreshToken()) {
-            clearTokens();
-            return null;
-        }
-
-        setIsLoading(true);
-        try{
-            /*백엔드 /module/auth/ 호출 */
-            const response = await apiClient.post(API_URL + 'update-token', {}, {
-                headers: {
-                    'Refresh-Token': refreshToken 
-                }
-            });
-
-            const { accessToken: newAccessToken } = response.data;
-            if(newAccessToken) {
-                localStorage.setItem('ACCESS_TOKEN_KEY', newAccessToken);
-                setAccessToken(newAccessToken);
-                setIsAccessTokenValid(true);
-                return newAccessToken;
-            }
-
-            return null;
-        } catch (error: any) {
-            console.error('AccessToken 갱신 실패:', error);
-            clearTokens();
-            return null;
-        } finally {
-            setIsLoading(false);
-        }
-    }, [refreshToken, clearTokens]);
-
-    /*토큰 전체 상태 확인 + 자동 갱신 */
     const ensureValidToken = useCallback(async (): Promise<boolean> => {
-        const isAccessValid = await validateAccessToken();
-        if( isAccessValid) return true;
+        let token = accessToken;
+        if(!token) {
+            token = localStorage.getItem('ACCESS_TOKEN');
+            if(token) setAccessToken(token); 
+        }
 
-        const newToken = await updateAccessToken();
-        return !!newToken;
-    }, [validateAccessToken, updateAccessToken]);
+        if(token && !isTokenExpiringSoon(token)) return true;
+
+        return await refreshAccessToken();
+    }, [accessToken, refreshAccessToken]);
 
     return {
         accessToken,
         isAccessTokenValid,
-        validateAccessToken,
-
-        refreshToken,
-        isRefreshTokenValid,
-        validateRefreshToken,
-
         setLoginTokens,
-        updateAccessToken,
+        refreshAccessToken,
         clearTokens,
         ensureValidToken,
-
         isLoading
     };
 };

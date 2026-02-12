@@ -19,28 +19,3 @@ export const VerifyEmailCode = async(email: string, code: string): Promise<strin
     return response.data;
 }
 
-/* 3. 토큰 검증(Access/Refresh Token 유효성 확인) */
-export const VerifyToken = async(token: string, tokenType: 'ACCESS' | 'REFRESH'): Promise<boolean> => {
-    try{
-        const headers: Record<string, string> = {
-            Authorization: `Bearer ${token}`
-        };
-        
-        if(tokenType === 'REFRESH'){
-            headers['Token-Type'] = 'REFRESH';
-        }
-        
-        console.log("Token-type:"+tokenType);
-
-        const response = await apiClient.post(API_URL + 'token-verify', 
-            { tokenType }, 
-            { headers }
-        );
-
-        console.log("response:"+response)
-
-        return response.data === 'ok';
-    }catch {
-        return false;
-    }
-};

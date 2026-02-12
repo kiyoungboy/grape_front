@@ -7,25 +7,23 @@ interface SigninRequest {
     password: string; 
 }
 
-interface TokenDto {
+interface SigninResponse {
     accessToken: string;
-    refreshToken: string;
+    message: string;
 }
 
 export const SigninApi = {
-    async signin(userId: string, password: string): Promise<TokenDto>{
-        const response = await apiClient.post<{ accessToken: string; refreshToken: string; message:string }>(
+    async signin(userId: string, password: string): Promise<{ accessToken: string }>{
+        const response = await apiClient.post<SigninResponse>(
             API_URL + 'signin',
             { userId, password } as SigninRequest
         );
-
         if(response.data.message !== 'success'){
             throw new Error(response.data.message || '로그인 실패');
         }
 
         return {
-            accessToken: response.data.accessToken!,
-            refreshToken: response.data.refreshToken!
+            accessToken: response.data.accessToken
         };
     }
 }

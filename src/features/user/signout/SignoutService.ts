@@ -3,15 +3,9 @@ import apiClient from "../../../services/axiosConfig";
 const API_URL = 'api/user/'
 
 export const SignoutApi = {
-    async signoutToServer(refreshToken: string): Promise<{ message: string }> {
+    async signoutToServer(): Promise<{ message: string }> {
         const response = await apiClient.post< { message?: string; error?: string }>(
-            API_URL + 'signout',
-            {},
-            {
-                headers: {
-                    'Refresh-Token': refreshToken
-                }
-            }
+            API_URL + 'signout'
         );
 
         if(response.data.error){

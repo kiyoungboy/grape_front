@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { useSignin } from './useSignin';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../auth/context/AuthContext';
 
 export const SigninFlow = () => {
     const [userId, setUserId] = useState('');
     const [password, setPassword] = useState('');
-    const { signin, isLoading, error } = useSignin();
+    const { signin } = useSignin();
+    const { isLoading } = useAuth();
     const navigate = useNavigate();
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -22,7 +24,6 @@ export const SigninFlow = () => {
                 <button type='submit' disabled={isLoading}>
                     {isLoading ? '로그인 중 ...' : '로그인'}
                 </button>
-                {error && <p className='error'>{error}</p>}
             </form>
 
             <div className='auth-links'>
