@@ -1,25 +1,30 @@
+import { AuthApi } from "../../auth/services/AuthService";
 import apiClient from "../../../services/axiosConfig";
 
-const API_URL = 'api/user/'
+const API_URL = '/user/'
 
-export interface FindIdRequest {
-    email: string;
-}
-
-export interface FindIdResponse {
+interface FindIdResponse {
     maskedUserId: string;
-    error?: string;
+    message: string;
 }
 
 export const FindIdApi = {
-    async findId(email: string): Promise<FindIdResponse> {
-        const response = await apiClient.post<FindIdResponse & { error?: string }>(
+    async sendVerificationCode(email: string): Promise<void> {
+        await AuthApi.requestEmailCode(email);
+    },
+
+    async verifyCode(email: string, code: string): Promise<void> {
+        await AuthApi.verifyEmailCode(email, code);
+    },
+
+    async findId(email: string): Promise<{ maskedUserId: string }> {
+        const response = await apiClient.post<FindIdResponse>(
             API_URL + 'find-id',
-            { email } as FindIdRequest
+            { email }
         );
 
-        if(response.data.error) {
-            throw new Error(response.data.error);
+        if (response.data.message !== 'success') {
+            throw new Error(response.data.message || '아이디 찾기 실패');
         }
 
         return { maskedUserId: response.data.maskedUserId };

@@ -16,7 +16,7 @@ export const useFindPw = () => {
     const [error, setError] = useState('');
 
     const sendCode = async (): Promise<boolean> => {
-        if(!userId.trim() || !email.trim()) {
+        if (!userId.trim() || !email.trim()) {
             setError('아이디와 이메일을 모두 입력해 주세요.');
             return false;
         }
@@ -24,11 +24,11 @@ export const useFindPw = () => {
         setIsLoading(true);
         setError('');
 
-        try{
+        try {
             await FindPwApi.sendVerificationCode(email);
             setStep('CODE');
             return true;
-        } catch (error: any){
+        } catch (error: any) {
             setError(error.message || '인증번호 발송 실패');
             return false;
         } finally {
@@ -39,7 +39,8 @@ export const useFindPw = () => {
     const verifyCode = async (): Promise<boolean> => {
         setIsLoading(true);
         setError('');
-        try{
+
+        try {
             await FindPwApi.verifyCode(email, code);
             setStep('NEW_PW');
             return true;
@@ -52,29 +53,19 @@ export const useFindPw = () => {
     };
 
     const resetPassword = async (): Promise<boolean> => {
+        if (newPassword !== newPasswordConfirm) {
+            setError('비밀번호가 서로 일치하지 않습니다.');
+            return false;
+        }
+
         setIsLoading(true);
         setError('');
 
-        if(newPassword !== newPasswordConfirm) {
-            setError('비밀번호가 서로 일치하지 않습니다.');
-            setIsLoading(false);
-            return false;
-        }
-        if(!userId.trim() || !email.trim()) {
-            setError('아이디와 이메일을 모두 입력해 주세요.');
-            setIsLoading(false);
-            return false;
-        }
-
-        try{
-            await FindPwApi.resetPassword({
-                userId,
-                email,
-                newPassword
-            });
+        try {
+            await FindPwApi.resetPassword({ userId, email, newPassword });
             setStep('DONE');
             return true;
-        } catch(error: any) {
+        } catch (error: any) {
             setError(error.message || '비밀번호 재설정 실패');
             return false;
         } finally {
@@ -84,8 +75,6 @@ export const useFindPw = () => {
 
     return {
         step,
-        setStep,
-
         userId,
         setUserId,
         email,
@@ -96,12 +85,10 @@ export const useFindPw = () => {
         setNewPassword,
         newPasswordConfirm,
         setNewPasswordConfirm,
-
         isLoading,
         error,
-
         sendCode,
         verifyCode,
         resetPassword
     };
-} ;
+};

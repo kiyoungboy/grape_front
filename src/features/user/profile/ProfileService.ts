@@ -1,6 +1,6 @@
 import apiClient from "../../../services/axiosConfig";
 
-const API_URL = 'api/user/'
+const API_URL = '/user/'
 
 export interface ProfileResponse {
     userId: string;
@@ -18,7 +18,7 @@ export const ProfileApi = {
     async getProfile(): Promise<ProfileResponse> {
         const response = await apiClient.get<ProfileResponse>(API_URL + 'profile', {
             headers: {
-                Authorization: `Bearer ${localStorage.getItem('ACCESS_TOKEN_KEY')}`
+                // Authorization: `Bearer ${localStorage.getItem('ACCESS_TOKEN_KEY')}`
             }
         });
         return response.data;
@@ -30,7 +30,7 @@ export const ProfileApi = {
             data,
             {
                 headers: {
-                    Authorization: `Bearer ${localStorage.getItem('ACCESS_TOKEN_KEY')}`
+                    // Authorization: `Bearer ${localStorage.getItem('ACCESS_TOKEN_KEY')}`
                 }
             }
         );

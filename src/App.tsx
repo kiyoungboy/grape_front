@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useTokenVerification } from "./features/auth/hooks/useTokenAuth";
 import { 
   BrowserRouter as Router,
@@ -16,21 +16,25 @@ import { AuthProvider, useAuth } from "./features/auth/context/AuthContext";
 
 function AppContent() {
 
-    const { ensureValidToken, isLoading } = useTokenVerification();
-    const [isAuthChecked, setIsAuthChecked] = useState(false);
+  const { ensureValidToken } = useTokenVerification();
+  const { isLoading, isAuthenticated, accessToken } = useAuth();
+  const ranRef = useRef(false);
 
-    useEffect(() => {
-      ensureValidToken().finally(() => setIsAuthChecked(true));
-    }, [ensureValidToken]);
+  useEffect(() => {
+    if(ranRef.current) return;
+    ranRef.current = true;
 
-    if(!isAuthChecked || isLoading) {
-      return (
-        <div className="loading-screen">
-          <h2>토큰 검증 중...</h2>
-          <p>잠시만 기다려 주세요.</p>
-        </div>
-      );
-    }
+    ensureValidToken().catch(() => {});
+  }, []);
+
+  if (isLoading && isAuthenticated) {
+    return (
+      <div className="loading-screen">
+        <h2>토큰 검증 중...</h2>
+        <p>잠시만 기다려 주세요.</p>
+      </div>
+    );
+  }
   
   
   return (
@@ -48,7 +52,7 @@ function AppContent() {
           <Route
             path="/profile"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute accessToken={accessToken}>
                 <ProfileFlow />
               </ProtectedRoute>
             }
@@ -61,20 +65,7 @@ function AppContent() {
   )
 }
 
-const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { accessToken, isLoading } = useAuth();
-  const [isAuthChecked, setIsAuthChecked] = useState(false);
-
-  useEffect(() => {
-    const check = async () => {
-      setIsAuthChecked(true);
-    } ;
-    check();
-  }, []);
-
-  if(isLoading){
-    return <div>로딩 중 ...</div>;
-  }
+const ProtectedRoute: React.FC<{ children: React.ReactNode; accessToken: string | null }> = ({ children, accessToken }) => {
 
   if(!accessToken){
     return <Navigate to="/signin" replace />;

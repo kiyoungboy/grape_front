@@ -1,5 +1,11 @@
 import axios from "axios";
 
+let accessToken: string | null = null;
+
+export const setAxiosAccessToken = (token: string | null) => {
+    accessToken = token;
+}
+
 const apiClient = axios.create({
     baseURL: '/api',
     withCredentials: true,
@@ -24,9 +30,8 @@ const processQueue = (error: any = null) => {
 apiClient.interceptors.request.use(config => {
     if(config.url?.includes('/signin')) return config;
 
-    const token = localStorage.getItem('ACCESS_TOKEN');
-    if(token){
-        config.headers.Authorization = `Bearer ${token}`;
+    if(accessToken) {
+        config.headers.Authorization = `Bearer ${accessToken}`;
     }
 
     return config;
@@ -49,13 +54,12 @@ apiClient.interceptors.response.use(
 
             isRefreshing = true;
             try {
-                const response = await apiClient.post('/api/auth/refresh-token');
+                const response = await apiClient.post('/auth/refresh-token');
                 const newToken = response.data.accessToken as string;
 
                 if(newToken){
                     const { setAccessToken } = require("../features/auth/context/AuthContext").authContextValue;
                     setAccessToken(newToken);
-                    localStorage.setItem('ACCESS_TOKEN', newToken);
 
                     processQueue();
                     originalRequest.headers['Authorization'] = `Bearer ${newToken}`;

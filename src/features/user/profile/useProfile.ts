@@ -3,7 +3,7 @@ import { ProfileApi, ProfileResponse } from './ProfileService';
 
 export const useProfile = () => {
     const [profile, setProfile] = useState<ProfileResponse | null>(null);
-    const [isLoading, setIsLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
 
     useEffect(() => {

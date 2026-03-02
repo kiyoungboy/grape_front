@@ -4,12 +4,8 @@ import { useAuth } from "../features/auth/context/AuthContext";
 
 export const Home = () => {
     const navigate = useNavigate();
-    const { isAuthenticated, isLoading } = useAuth();
+    const { isAuthenticated } = useAuth();
     const { signout } = useSignout();
-
-    if(isLoading){
-        return <div>로딩 중...</div>
-    }
 
     return (
         <div style={{ padding: "40px", textAlign: "center" }}>

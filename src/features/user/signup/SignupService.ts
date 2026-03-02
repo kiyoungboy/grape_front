@@ -1,7 +1,7 @@
 import { SigninApi } from "../signin/SigninService";
 import apiClient from "../../../services/axiosConfig";
 
-const API_URL = '/api/user/'
+const API_URL = '/user/'
 
 export interface SignupRequest {
     userId: string;
