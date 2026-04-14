@@ -1,7 +1,10 @@
-import { useState } from 'react';
+import {  useState } from 'react';
 import { useSignup, SignupForm } from './useSignup';
+import { useNavigate } from 'react-router-dom';
 
 export const SignupFlow = () => {
+    const navigate = useNavigate();
+
     const [form, setForm] = useState<SignupForm>({
         userId: '',
         userPw: '',
@@ -21,7 +24,12 @@ export const SignupFlow = () => {
 
     const handleSubmit = async(e: React.FormEvent) => {
         e.preventDefault();
+
         const success = await signup(form);
+
+        if(success) {
+            navigate("/");
+        }
     };
 
     return(
@@ -32,7 +40,7 @@ export const SignupFlow = () => {
             <input name='userEmail' type='email' placeholder='이메일' value={form.userEmail} onChange={handleChange} required/>
 
             <button type='submit' disabled={isLoading}>
-                {isLoading ? '회원가입 중...' : '회원가입'}
+                {isLoading ? '회원가입 중...' : "회원가입"}
             </button>
 
             {error && <p className='error'>{error}</p>}

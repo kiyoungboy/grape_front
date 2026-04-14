@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useSignin } from './useSignin';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../auth/context/AuthContext';
+import SocialLoginButtons from '../../auth/components/SocialLoginButtons';
 
 export const SigninFlow = () => {
     const [userId, setUserId] = useState('');
@@ -31,6 +32,7 @@ export const SigninFlow = () => {
                 <button type='button' className='link-button' onClick={() => navigate('/find-id')}>아이디 찾기</button>
                 <button type='button' className='link-button' onClick={() => navigate('/find-pw')}>비밀번호 찾기</button>
             </div>
+            <SocialLoginButtons/>
         </div>
     );
 };

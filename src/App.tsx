@@ -4,7 +4,8 @@ import {
   BrowserRouter as Router,
   Routes,
   Route,
-  Navigate  
+  Navigate,  
+  useLocation
 } from "react-router-dom";
 import { SigninFlow } from "./features/user/signin/SigninFlow";
 import { SignupFlow } from "./features/user/signup/SignupFlow";
@@ -13,6 +14,7 @@ import { FindPwFlow } from "./features/user/find-password/FindUserPwFlow";
 import { ProfileFlow } from "./features/user/profile/ProfileFlow";
 import { Home } from "./pages/Home";
 import { AuthProvider, useAuth } from "./features/auth/context/AuthContext";
+import OAuthCallbackPage from "./pages/OAuthCallback";
 
 function AppContent() {
 
@@ -20,12 +22,33 @@ function AppContent() {
   const { isLoading, isAuthenticated, accessToken } = useAuth();
   const ranRef = useRef(false);
 
+  const location = useLocation();
+
+useEffect(() => {
+  const init = async () => {
+    try{
+      await ensureValidToken();
+    } catch(e) {
+      window.location.replace("/");
+    }
+  };
+
+  init();
+}, []);
+
   useEffect(() => {
-    if(ranRef.current) return;
-    ranRef.current = true;
+
+    const isAuthPage =
+      location.pathname === "/signin" ||
+      location.pathname.startsWith("/oauth") ||
+      location.pathname === "/signup";
+
+      if(isAuthPage) return;
+
+      if(!accessToken) return;
 
     ensureValidToken().catch(() => {});
-  }, []);
+  }, [accessToken]);
 
   if (isLoading && isAuthenticated) {
     return (
@@ -47,6 +70,7 @@ function AppContent() {
           <Route path="/signup" element={<SignupFlow />} />
           <Route path="/find-id" element={<FindIdFlow />} />
           <Route path="/find-pw" element={<FindPwFlow />} />
+          <Route path="/oauth/:provider/callback" element={<OAuthCallbackPage />} />
 
           {/* 보호된 페이지 */}
           <Route

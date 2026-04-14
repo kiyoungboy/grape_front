@@ -12,7 +12,6 @@ export interface SignupRequest {
 
 export const SignupApi = {
     async signup(data: SignupRequest): Promise<{ message: string }> {
-        console.log('TEST5');
         const response = await apiClient.post<{ message?: string; error?: string }>(
             API_URL + 'signup',
             data
