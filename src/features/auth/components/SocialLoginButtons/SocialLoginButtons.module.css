@@ -1,0 +1,78 @@
+
+/* 컨테이너 */
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100px;
+  padding: 28px 20px;
+  width:100%;
+}
+
+/* 버튼 */
+.button {
+  display: flex;
+  align-items: center;
+  height: 48px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  position: relative;
+  padding: 0 16px;
+}
+
+.iconWrapper {
+  width: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.iconWrapper img {
+  width: 30px;
+  height: 30px;
+}
+
+.textWrapper {
+  flex: 1;
+  text-align: center;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+/* =========================
+   GOOGLE
+========================= */
+.google {
+  background: #ffffff;
+  border: 1px solid #ddd;
+  color: #333;
+}
+
+.google:hover {
+  background: #f7f7f7;
+}
+
+/* =========================
+   KAKAO
+========================= */
+.kakao {
+  background: #fee500;
+  color: #000;
+}
+
+.kakao:hover {
+  filter: brightness(0.95);
+}
+
+/* =========================
+   NAVER
+========================= */
+.naver {
+  background: #03c75a;
+  color: #fff;
+}
+
+.naver:hover {
+  filter: brightness(0.9);
+}

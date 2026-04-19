@@ -1,0 +1,141 @@
+/* =========================
+   모바일 기본
+========================= */
+
+/* 전체 컨테이너 */
+.signinContainer {
+  flex: 1 0 auto;
+  min-height: 100vh;
+  margin: 0px auto;
+  max-width: 365px;
+  display: flex;
+  -webkit-box-pack: center;
+  justify-content: center;
+  -webkit-box-align: center;
+  align-items: center;
+  flex-direction: column;
+  box-sizing: border-box;
+  padding: 0px 0px 40px 0px;
+}
+
+/* 로그인 카드 */
+.loginForm {
+  padding: 18px 20px;
+  border-radius: 16px;
+  width: 100%;
+  /*
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.04),
+    0 10px 30px rgba(0, 0, 0, 0.06);
+    */
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  animation: fadeInUp 0.4s ease;
+}
+
+/* 제목 */
+.loginForm h2 {
+  text-align: center;
+  font-size: 25px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  color:var(--color-text-main);
+  margin-bottom:18px;
+}
+
+/* input */
+.loginForm input {
+  height: 44px;
+  padding: 0 14px;
+  border: 1px solid #e5e8ee;
+  border-radius: 12px;
+  font-size: 14px;
+  background: #fafbfc;
+  transition: all 0.2s ease;
+  color: var(--color-text-main);
+}
+
+.loginForm input::placeholder {
+  color: #b0b3b8;
+}
+
+.loginForm input:focus {
+  outline: none;
+  background: #fff;
+  border-color: var(--color-primary, var(--color-secondary));
+}
+
+/* 버튼 */
+.loginForm button {
+  height: 46px;
+  margin-top: 18px;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.loginForm button:active {
+  transform: scale(0.98);
+}
+
+.loginForm button:hover {
+  box-shadow: 0 8px 18px rgba(255, 45, 85, 0.25);
+}
+
+.loginForm button:disabled {
+  background: #d1d5db;
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+/* 링크 영역 */
+.authLinks {
+  margin-top: 5px;
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  flex-wrap: wrap;
+}
+
+/* 링크 버튼 */
+.linkButton {
+  background: none;
+  border: none;
+  font-size: 13px;
+  color: var(--color-text-sub);
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+/* 밑줄 애니메이션 */
+.linkButton::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+
+  width: 0%;
+  height: 1px;
+  background: var(--color-primary, #ff2d55);
+  transition: width 0.2s ease;
+}
+
+.linkButton:hover {
+  color: var(--color-primary, #ff2d55);
+}
+
+.linkButton:hover::after {
+  width: 100%;
+}
+
+/* 소셜 영역 */
+.signinContainer> :last-child {
+  margin-top: 24px;
+}

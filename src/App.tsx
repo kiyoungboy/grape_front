@@ -1,10 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useTokenVerification } from "./features/auth/hooks/useTokenAuth";
-import { 
+import {
   BrowserRouter as Router,
   Routes,
   Route,
-  Navigate,  
+  Navigate,
   useLocation
 } from "react-router-dom";
 import { SigninFlow } from "./features/user/signin/SigninFlow";
@@ -12,7 +12,7 @@ import { SignupFlow } from "./features/user/signup/SignupFlow";
 import { FindIdFlow } from "./features/user/find-id/FindUserIdFlow";
 import { FindPwFlow } from "./features/user/find-password/FindUserPwFlow";
 import { ProfileFlow } from "./features/user/profile/ProfileFlow";
-import { Home } from "./pages/Home";
+import { Home } from "./pages/home/Home";
 import { AuthProvider, useAuth } from "./features/auth/context/AuthContext";
 import OAuthCallbackPage from "./pages/OAuthCallback";
 
@@ -24,17 +24,17 @@ function AppContent() {
 
   const location = useLocation();
 
-useEffect(() => {
-  const init = async () => {
-    try{
-      await ensureValidToken();
-    } catch(e) {
-      window.location.replace("/");
-    }
-  };
+  useEffect(() => {
+    const init = async () => {
+      try {
+        await ensureValidToken();
+      } catch (e) {
+        window.location.replace("/");
+      }
+    };
 
-  init();
-}, []);
+    init();
+  }, []);
 
   useEffect(() => {
 
@@ -43,11 +43,11 @@ useEffect(() => {
       location.pathname.startsWith("/oauth") ||
       location.pathname === "/signup";
 
-      if(isAuthPage) return;
+    if (isAuthPage) return;
 
-      if(!accessToken) return;
+    if (!accessToken) return;
 
-    ensureValidToken().catch(() => {});
+    ensureValidToken().catch(() => { });
   }, [accessToken]);
 
   if (isLoading && isAuthenticated) {
@@ -58,40 +58,39 @@ useEffect(() => {
       </div>
     );
   }
-  
-  
+
+
   return (
-      <div className="app">
-        <Routes>
-          {/* 공개 페이지 */}
-          <Route path="/" element={ <Home/> } />
+    <div className="app">
+      <Routes>
+        {/* 공개 페이지 */}
+        <Route path="/" element={<Home />} />
+        <Route path="/signin" element={<SigninFlow />} />
+        <Route path="/signup" element={<SignupFlow />} />
+        <Route path="/find-id" element={<FindIdFlow />} />
+        <Route path="/find-pw" element={<FindPwFlow />} />
+        <Route path="/oauth/:provider/callback" element={<OAuthCallbackPage />} />
 
-          <Route path="/signin" element={<SigninFlow />} />
-          <Route path="/signup" element={<SignupFlow />} />
-          <Route path="/find-id" element={<FindIdFlow />} />
-          <Route path="/find-pw" element={<FindPwFlow />} />
-          <Route path="/oauth/:provider/callback" element={<OAuthCallbackPage />} />
+        {/* 보호된 페이지 */}
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute accessToken={accessToken}>
+              <ProfileFlow />
+            </ProtectedRoute>
+          }
+        />
 
-          {/* 보호된 페이지 */}
-          <Route
-            path="/profile"
-            element={
-              <ProtectedRoute accessToken={accessToken}>
-                <ProfileFlow />
-              </ProtectedRoute>
-            }
-            />
-
-            {/* 기본 라우트 */}
-            <Route path="/" element={<Home />} />
-        </Routes>
-      </div>
+        {/* 기본 라우트 */}
+        <Route path="/" element={<Home />} />
+      </Routes>
+    </div>
   )
 }
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode; accessToken: string | null }> = ({ children, accessToken }) => {
 
-  if(!accessToken){
+  if (!accessToken) {
     return <Navigate to="/signin" replace />;
   }
 

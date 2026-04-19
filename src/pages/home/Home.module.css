@@ -1,0 +1,180 @@
+/* =========================
+   배경 (그라데이션 + 글로우)
+========================= */
+.container {
+  min-height: 100vh;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  padding: 20px;
+
+  background: radial-gradient(circle at 20% 20%, #ffe6f0 0%, transparent 40%),
+              radial-gradient(circle at 80% 80%, #e6f0ff 0%, transparent 40%),
+              linear-gradient(135deg, #f9fafc, #eef1f6);
+}
+
+/* =========================
+   카드 (Glass 느낌)
+========================= */
+.card {
+  width: 100%;
+  max-width: 420px;
+
+  padding: 36px 26px;
+
+  border-radius: 20px;
+
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.08),
+    0 30px 80px rgba(0, 0, 0, 0.06);
+
+  text-align: center;
+
+  animation: floatUp 0.6s ease;
+}
+
+/* =========================
+   제목
+========================= */
+.title {
+  font-size: 28px;
+  font-weight: 800;
+
+  background: linear-gradient(
+    135deg,
+    var(--color-primary),
+    var(--color-secondary)
+  );
+
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* =========================
+   섹션
+========================= */
+.section {
+  margin-top: 28px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* 텍스트 */
+.text {
+  font-size: 14px;
+  color: var(--color-text-sub);
+}
+
+/* =========================
+   버튼 (Primary)
+========================= */
+.primaryButton {
+  height: 48px;
+
+  border: none;
+  border-radius: 14px;
+
+  background: linear-gradient(
+    135deg,
+    var(--color-primary),
+    var(--color-secondary)
+  );
+
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+
+  transition: all 0.25s ease;
+}
+
+/* hover glow */
+.primaryButton:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 10px 20px rgba(255, 45, 85, 0.3),
+    0 4px 10px rgba(255, 45, 85, 0.2);
+}
+
+/* click */
+.primaryButton:active {
+  transform: scale(0.96);
+}
+
+/* shine 효과 */
+.primaryButton::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -75%;
+
+  width: 50%;
+  height: 100%;
+
+  background: linear-gradient(
+    120deg,
+    transparent,
+    rgba(255,255,255,0.4),
+    transparent
+  );
+
+  transition: all 0.5s ease;
+}
+
+.primaryButton:hover::before {
+  left: 120%;
+}
+
+/* =========================
+   버튼 (Secondary)
+========================= */
+.secondaryButton {
+  height: 48px;
+
+  border-radius: 14px;
+  border: 1px solid rgba(0,0,0,0.08);
+
+  background: rgba(255,255,255,0.8);
+  backdrop-filter: blur(6px);
+
+  color: var(--color-text-main);
+
+  font-size: 15px;
+  font-weight: 500;
+
+  cursor: pointer;
+
+  transition: all 0.25s ease;
+}
+
+.secondaryButton:hover {
+  transform: translateY(-2px);
+  background: #fff;
+
+  box-shadow:
+    0 6px 14px rgba(0,0,0,0.08);
+}
+
+/* =========================
+   애니메이션
+========================= */
+@keyframes floatUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}

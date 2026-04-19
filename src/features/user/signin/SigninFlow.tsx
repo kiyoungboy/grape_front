@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { useSignin } from './useSignin';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../auth/context/AuthContext';
-import SocialLoginButtons from '../../auth/components/SocialLoginButtons';
+import SocialLoginButtons from '../../auth/components/SocialLoginButtons/SocialLoginButtons';
+import styles from './SigninFlow.module.css';
 
 export const SigninFlow = () => {
     const [userId, setUserId] = useState('');
@@ -17,8 +18,8 @@ export const SigninFlow = () => {
     };
 
     return(
-        <div className='signin-container'>
-            <form onSubmit={handleSubmit} className='login-form'>
+        <div className={styles.signinContainer}>
+            <form onSubmit={handleSubmit} className={styles.loginForm}>
                 <h2>로그인</h2>
                 <input placeholder='아이디' value={userId} onChange={(e) => setUserId(e.target.value)} required/>
                 <input type='password' placeholder='비밀번호' value={password} onChange={(e) => setPassword(e.target.value)} required/>
@@ -27,10 +28,10 @@ export const SigninFlow = () => {
                 </button>
             </form>
 
-            <div className='auth-links'>
-                <button type='button' className='link-button' onClick={() => navigate('/signup')}>회원가입</button>
-                <button type='button' className='link-button' onClick={() => navigate('/find-id')}>아이디 찾기</button>
-                <button type='button' className='link-button' onClick={() => navigate('/find-pw')}>비밀번호 찾기</button>
+            <div className="linkButton-container">
+                <button type='button' className="linkButton" onClick={() => navigate('/signup')}>회원가입</button>
+                <button type='button' className="linkButton" onClick={() => navigate('/find-id')}>아이디 찾기</button>
+                <button type='button' className="linkButton" onClick={() => navigate('/find-pw')}>비밀번호 찾기</button>
             </div>
             <SocialLoginButtons/>
         </div>

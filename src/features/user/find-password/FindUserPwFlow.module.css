@@ -1,0 +1,138 @@
+/* =========================
+   컨테이너
+========================= */
+.resetPwFlow {
+  flex: 1 0 auto;
+  min-height: 100vh;
+  margin: 0 auto;
+  max-width: 365px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+
+  box-sizing: border-box;
+  padding: 0 0 40px 0;
+}
+
+/* =========================
+   폼
+========================= */
+.form {
+  width: 100%;
+  padding: 18px 20px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* =========================
+   제목
+========================= */
+.title {
+  text-align: center;
+  font-size: 25px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  color: var(--color-text-main);
+
+  margin-bottom: 12px;
+}
+
+/* =========================
+   설명
+========================= */
+.description {
+  font-size: 13px;
+  color: var(--color-text-sub);
+  text-align: center;
+  margin-bottom: 6px;
+}
+
+/* =========================
+   input
+========================= */
+.input {
+  height: 44px;
+  padding: 0 14px;
+
+  border: 1px solid #e5e8ee;
+  border-radius: 12px;
+
+  font-size: 14px;
+  color: var(--color-text-main);
+  background: #fafbfc;
+
+  transition: all 0.2s ease;
+}
+
+.input::placeholder {
+  color: #b0b3b8;
+}
+
+.input:focus {
+  outline: none;
+  background: #fff;
+  border-color: var(--color-primary, var(--color-secondary));
+}
+
+/* =========================
+   버튼
+========================= */
+.button {
+  height: 46px;
+  margin-top: 18px;
+
+  border: none;
+  border-radius: 12px;
+
+  background: linear-gradient(
+    135deg,
+    var(--color-primary),
+    var(--color-secondary)
+  );
+
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.button:hover {
+  box-shadow: 0 8px 18px rgba(255, 45, 85, 0.25);
+}
+
+.button:active {
+  transform: scale(0.98);
+}
+
+.button:disabled {
+  background: #d1d5db;
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+/* =========================
+   완료 화면
+========================= */
+.success {
+  width: 100%;
+  padding: 18px 20px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  text-align: center;
+}
+
+.successTitle {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--color-text-main);
+}
+
