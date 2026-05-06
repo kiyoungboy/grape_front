@@ -25,6 +25,10 @@ const providerConfig = {
 export default function SocialLoginButtons() {
   const handleLogin = (provider: SocialProvider) => {
     const url = buildSocialLoginUrl(provider);
+
+    alert("provider: " + provider);
+    alert("Full URL: " + url);
+
     window.location.href = url;
   };
 

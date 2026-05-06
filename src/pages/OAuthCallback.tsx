@@ -9,23 +9,25 @@ export default function OAuthCallbackPage() {
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
     const { handleOAuthCallback } = useSocialAuth();
-    const calledRef = useRef(false);
 
     useEffect(() => {
 
-        if(calledRef.current) return;
-        calledRef.current = true;
+        const code = searchParams.get('code');
+        const state = searchParams.get('state');
+        const savedState = getOAuthState();
+
+        if(!provider || !code) {
+            alert("bad request");
+            navigate("/signin");
+            return;
+        }
+
+        const processedCode = sessionStorage.getItem("oauth_code");
+        if (processedCode === code) return;
+
+        sessionStorage.setItem("oauth_code", code);
 
         const ProcessOAuthLogin = async () => {
-            const code = searchParams.get('code');
-            const state = searchParams.get('state');
-            const savedState = getOAuthState();
-
-            if(!provider || !code) {
-                alert("bad request");
-                navigate("/signin");
-                return;
-            }
 
             if(savedState && state !== savedState) {
                 alert("invalid request");

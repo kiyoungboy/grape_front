@@ -11,3 +11,9 @@ export interface AuthState {
     user: AuthUser | null;
     isLoading: boolean;
 }
+
+export interface AuthCheck {
+    userKey: string;
+    userEmail: string;
+    loginAuth: string;
+}

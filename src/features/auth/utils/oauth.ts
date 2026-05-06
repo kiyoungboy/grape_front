@@ -29,7 +29,7 @@ export const createOAuthState = (): string => {
     return state;
 };
 
-export const getOAuthState = (): string | null => {
+export const getOAuthState = (): string | null  => {
     return sessionStorage.getItem(OAUTH_STATE_KEY);
 };
 

@@ -7,9 +7,7 @@ import { useCallback } from "react";
 export const useSocialAuth = () => {
     const navigate = useNavigate();
     const {
-        setAccessToken,
-        setUser,
-        setAuthType,
+        checkMe,
         setIsLoading,
     } = useAuth();
 
@@ -17,15 +15,6 @@ export const useSocialAuth = () => {
         setIsLoading(true);
         try{
             const result = await SocialService.login(payload);
-            if(result.accessToken) {
-                setAccessToken(result.accessToken);
-                setUser({
-                        email: result.email,
-                        name: result.name,
-                        nickname: result.nickname,
-                });
-                setAuthType("SOCIAL");
-            }
             return result;
         } finally {
             setIsLoading(false);
@@ -35,11 +24,9 @@ export const useSocialAuth = () => {
     const handleOAuthCallback = useCallback(async(payload: SocialLoginRequest) => {
         const result = await signinWithSocial(payload);
         console.log("OAuth result:", result);
-        if(result.accessToken){
-            navigate("/");
-            return;
-        }
-    }, [signinWithSocial, navigate]);
+        await checkMe();
+        navigate("/", {replace:true});
+    }, [signinWithSocial, checkMe, navigate]);
 
     return {
         signinWithSocial,

@@ -1,16 +1,12 @@
 import { createContext, useContext, ReactNode, useEffect, useState, useCallback } from "react";
-import { setAxiosAccessToken } from "../../../services/axiosConfig";
-import type { AuthState, AuthUser } from "../types/auth";
+import { AuthApi } from "../services/AuthService";
+import { AuthCheck } from "../types/auth";
 
 interface AuthContextType {
-    accessToken: string | null;
-    user: AuthUser | null;
-    authType: "NORMAL" | "SOCIAL" | null;
+    user: AuthCheck | null;
     isAuthenticated: boolean;
     isLoading: boolean;
-    setAccessToken: (token: string | null ) => void;
-    setUser: (user: AuthUser | null) => void;
-    setAuthType: (type: "NORMAL" | "SOCIAL" | null) => void;
+    checkMe: () => Promise<void>
     setIsLoading: (loading: boolean) => void;
 }
 
@@ -23,35 +19,33 @@ export const useAuth = (): AuthContextType => {
 };
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-    const [accessToken, _setAccessToken] = useState<string | null>(null);
-    const [user, _setUser] = useState<AuthUser | null>(null);
-    const [authType, _setAuthType] = useState<"NORMAL" | "SOCIAL" | null>(null);
+    const [user, setUser] = useState<AuthCheck | null>(null);
     const [isLoading, setIsLoading] = useState(false);
 
-    const setAccessToken = useCallback((token: string | null) => {
-        _setAccessToken(token);
-        setAxiosAccessToken(token);
-    }, []);
+    const isAuthenticated = !!user;
 
-    const setUser = useCallback((user: AuthUser | null) => {
-        _setUser(user);
-    }, []);
+    const checkMe = async () => {
+        setIsLoading(true);
+        try{
+            const data = await AuthApi.checkMeApi();
+            setUser(data);
+        } catch {
+            setUser(null);
+        } finally {
+            setIsLoading(false);
+        }
+    }
 
-    const setAuthType = useCallback((authType: "NORMAL" | "SOCIAL" | null) => {
-        _setAuthType(authType);
-    }, []);
-
+    useEffect(() => {
+        checkMe();
+    }, [])
 
     return (
         <AuthContext.Provider value={{
-            accessToken,
             user,
-            authType,
-            isAuthenticated: !!accessToken,
+            isAuthenticated: !!user,
             isLoading,
-            setAccessToken,
-            setUser,
-            setAuthType,
+            checkMe,
             setIsLoading,
         }}>
             {children}
