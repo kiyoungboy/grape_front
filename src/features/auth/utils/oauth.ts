@@ -1,5 +1,6 @@
-
+import { v4 as uuidv4 } from "uuid";
 import type { SocialProvider } from "../types/social";
+
 const OAUTH_CONFIG = {
     GOOGLE: {
         clientId: import.meta.env.VITE_GOOGLE_CLIENT_ID,
@@ -24,7 +25,7 @@ const OAUTH_CONFIG = {
 const OAUTH_STATE_KEY = 'oauth_state';
 
 export const createOAuthState = (): string => {
-    const state = crypto.randomUUID();
+    const state = uuidv4();
     sessionStorage.setItem(OAUTH_STATE_KEY, state);
     return state;
 };
