@@ -1,7 +1,5 @@
 import axios from "axios";
 
-let accessToken: string | null = null;
-
 const apiClient = axios.create({
     baseURL: '/api',
     withCredentials: true,
@@ -14,10 +12,29 @@ const apiClient = axios.create({
 
 apiClient.interceptors.response.use(
     (response) => response,
+
     async(error) => {
         const originalRequest = error.config;
 
-        if(error.response?.status === 401 && !originalRequest._retry) {
+        if(!originalRequest) {
+            return Promise.reject(error);
+        }
+
+        const requestUrl = originalRequest.url ?? "";
+
+        if(requestUrl.includes('/auth/refresh-token')) {
+            sessionStorage.removeItem("isAuthenticated");
+            return Promise.reject(error);
+        }
+
+        if(requestUrl.includes("/user/signin") || requestUrl.includes("/user/signup")) {
+            return Promise.reject(error);
+        }
+
+        const isAuthenticated = sessionStorage.getItem("isAuthenticated") === "true";
+
+
+        if(isAuthenticated && error.response?.status === 401 && !originalRequest._retry) {
             originalRequest._retry = true;
 
             try {
@@ -25,6 +42,7 @@ apiClient.interceptors.response.use(
                 return apiClient(originalRequest);
 
             } catch (error){
+                sessionStorage.removeItem("isAuthenticated");
                 window.location.href = '/signin'; 
                 return Promise.reject(error);
             } 

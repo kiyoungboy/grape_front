@@ -6,7 +6,7 @@ interface AuthContextType {
     user: AuthCheck | null;
     isAuthenticated: boolean;
     isLoading: boolean;
-    checkMe: () => Promise<void>
+    checkMe: () => Promise<boolean>
     setIsLoading: (loading: boolean) => void;
 }
 
@@ -24,13 +24,16 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     const isAuthenticated = !!user;
 
-    const checkMe = async () => {
+    const checkMe = async (): Promise<boolean> => {
         setIsLoading(true);
         try{
             const data = await AuthApi.checkMeApi();
             setUser(data);
+            return true;
         } catch {
             setUser(null);
+            sessionStorage.removeItem("isAuthenticated");
+            return false;
         } finally {
             setIsLoading(false);
         }

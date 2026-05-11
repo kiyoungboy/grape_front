@@ -10,7 +10,13 @@ export const useSignin = () => {
         setIsLoading(true);
         try{
             await SigninApi.signin(userId, password);
-            await checkMe();
+
+            const success = await checkMe();
+
+            if(success){
+                sessionStorage.setItem("isAuthenticated", "true");
+            }
+
             navigate('/');
             return true;
         }catch (error) {

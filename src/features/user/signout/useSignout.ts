@@ -9,6 +9,7 @@ export const useSignout = () => {
     const signout = async () => {
         try{
             await SignoutApi.signoutToServer();
+            sessionStorage.removeItem("isAuthenticated");
         } catch (e) {
 
         } finally {
