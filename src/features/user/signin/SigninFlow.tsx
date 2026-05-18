@@ -8,7 +8,7 @@ import styles from './SigninFlow.module.css';
 export const SigninFlow = () => {
     const [userId, setUserId] = useState('');
     const [password, setPassword] = useState('');
-    const { signin } = useSignin();
+    const { signin, errorMessage } = useSignin();
     const { isLoading, isAuthenticated } = useAuth();
     const navigate = useNavigate();
 
@@ -23,8 +23,8 @@ export const SigninFlow = () => {
                 <h2>로그인</h2>
                 <input placeholder='아이디' value={userId} onChange={(e) => setUserId(e.target.value)} required/>
                 <input type='password' placeholder='비밀번호' value={password} onChange={(e) => setPassword(e.target.value)} required/>
-                <button type='submit' disabled={isLoading && isAuthenticated}>
-                    {isLoading && isAuthenticated ? '로그인 중 ...' : '로그인'}
+                <button type='submit' disabled={isLoading}>
+                    {isLoading ? '로그인 중 ...' : '로그인'}
                 </button>
             </form>
 
@@ -33,6 +33,14 @@ export const SigninFlow = () => {
                 <button type='button' className="linkButton" onClick={() => navigate('/find-id')}>아이디 찾기</button>
                 <button type='button' className="linkButton" onClick={() => navigate('/find-pw')}>비밀번호 찾기</button>
             </div>
+
+            {
+                errorMessage && (
+                    <div>
+                        {errorMessage}
+                    </div>
+                )
+            }
             <SocialLoginButtons/>
         </div>
     );

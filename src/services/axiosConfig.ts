@@ -1,4 +1,5 @@
 import axios from "axios";
+import { handleApiError } from "../errors/errorHandler";
 
 const apiClient = axios.create({
     baseURL: '/api',
@@ -24,11 +25,11 @@ apiClient.interceptors.response.use(
 
         if(requestUrl.includes('/auth/refresh-token')) {
             sessionStorage.removeItem("isAuthenticated");
-            return Promise.reject(error);
+            return Promise.reject(handleApiError(error));
         }
 
         if(requestUrl.includes("/user/signin") || requestUrl.includes("/user/signup")) {
-            return Promise.reject(error);
+            return Promise.reject(handleApiError(error));
         }
 
         const isAuthenticated = sessionStorage.getItem("isAuthenticated") === "true";
@@ -41,13 +42,13 @@ apiClient.interceptors.response.use(
                 await apiClient.post('/auth/refresh-token');
                 return apiClient(originalRequest);
 
-            } catch (error){
+            } catch (refreshError){
                 sessionStorage.removeItem("isAuthenticated");
                 window.location.href = '/signin'; 
-                return Promise.reject(error);
+                return Promise.reject(handleApiError(refreshError));
             } 
         }
-        return Promise.reject(error);
+        return Promise.reject(handleApiError(error));
     }
 );
 
