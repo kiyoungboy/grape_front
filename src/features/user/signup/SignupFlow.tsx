@@ -13,7 +13,7 @@ export const SignupFlow = () => {
         userEmail: ''
     });
 
-    const { signup, isLoading, error } = useSignup();
+    const { signup, isLoading, errorMessage } = useSignup();
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -83,7 +83,7 @@ export const SignupFlow = () => {
                     {isLoading ? '회원가입 중...' : "회원가입"}
                 </button>
 
-                {error && <p className="error">{error}</p>}
+                {errorMessage && <p className="error">{errorMessage}</p>}
 
             </form>
             <div className="linkButton-container">
