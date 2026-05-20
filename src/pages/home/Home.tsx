@@ -18,7 +18,10 @@ export const Home = () => {
                     (
                         <div className={styles.section}>
                             <p className={styles.text}>로그인 상태입니다!</p>
-                            <button className={styles.primaryButton} onClick={signout} >
+                            <button className={styles.primaryButton} onClick={() => {window.location.href = "http://localhost:5173"}}>
+                                채팅
+                            </button>
+                            <button className={styles.secondaryButton} onClick={signout} >
                                 로그아웃
                             </button>
                         </div>
