@@ -1,6 +1,6 @@
 ## 1. 프로젝트 소개
 
-운영링크: https://angdooz.co.kr  
+운영링크: https://angdooz.com  
 채팅 Front-end Git: https://github.com/kiyoungboy/grape_chat_front  
 프로젝트 Back-end Git: https://github.com/world-booster/MARRYOH  
 개발기간: 2025/11 ~ ing  
