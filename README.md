@@ -1,6 +1,8 @@
 ## 1. 프로젝트 소개
 
-링크: https://angdooz.co.kr
+운영링크: https://angdooz.co.kr
+채팅 Front-end Git: https://github.com/kiyoungboy/grape_chat_front
+프로젝트 Back-end Git: https://github.com/world-booster/MARRYOH
 개발기간: 2025/11 ~ ing
 
 실시간 채팅 기능을 제공하는 웹 기반 서비스입니다.
