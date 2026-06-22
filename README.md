@@ -29,27 +29,9 @@ JWT 기반 인증, 로그인, 회원가입, WebSocket을 이용한 실시간 메
 - Tool: IntelliJ, VS Code, DBeaver, GitHub
 
 ## 4. 프로젝트 구조(로그인)
-src
- ┣ features
- ┃ ┣ auth
- ┃ ┃ ┣ components
- ┃ ┃ ┣ context
- ┃ ┃ ┣ hooks
- ┃ ┃ ┣ services
- ┃ ┃ ┣ types
- ┃ ┃ ┗ utils
- ┃ ┗ user
- ┣ services
- ┣ store
- ┣ hooks
- ┣ types
- ┣ pages
- ┣ layout
- ┣ utils
- ┗ components ...
 
- 프로젝트 구조의 경우 접근성 그리고 확장성에 중점을 두어 구성했습니다.
- 전체 - 부분(기능)으로 구분하고, 단일 책임 원칙이 지켜질 수 있도록 노력했습니다.
+프로젝트 구조의 경우 접근성 그리고 확장성에 중점을 두어 구성했습니다.
+전체 - 부분(기능, features)으로 구분하고, 단일 책임 원칙이 지켜질 수 있도록 노력했습니다.
 
 ## 5. 주요 구현 내용
 
