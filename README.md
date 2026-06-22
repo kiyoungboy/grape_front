@@ -1,14 +1,14 @@
 ## 1. 프로젝트 소개
 
-운영링크: https://angdooz.co.kr
-채팅 Front-end Git: https://github.com/kiyoungboy/grape_chat_front
-프로젝트 Back-end Git: https://github.com/world-booster/MARRYOH
-개발기간: 2025/11 ~ ing
-
-실시간 채팅 기능을 제공하는 웹 기반 서비스입니다.
-JWT 기반 인증, 로그인, 회원가입, WebSocket을 이용한 실시간 메시지 송수신, 친구 추가, 채팅방 생성, 읽음 처리 기능을 구현했습니다.
-
-개인 프로젝트로 진행했으며, 로그인/보안 서비스 및 채팅 서비스는 분리하여 구성하였습니다.
+운영링크: https://angdooz.co.kr  
+채팅 Front-end Git: https://github.com/kiyoungboy/grape_chat_front  
+프로젝트 Back-end Git: https://github.com/world-booster/MARRYOH  
+개발기간: 2025/11 ~ ing  
+  
+실시간 채팅 기능을 제공하는 웹 기반 서비스입니다.  
+JWT 기반 인증, 로그인, 회원가입, WebSocket을 이용한 실시간 메시지 송수신, 친구 추가, 채팅방 생성, 읽음 처리 기능을 구현했습니다.  
+  
+개인 프로젝트로 진행했으며, 로그인/보안 서비스 및 채팅 서비스는 분리하여 구성하였습니다.  
 
 ## 2. 주요 기능
 - 회원가입 / 로그인
