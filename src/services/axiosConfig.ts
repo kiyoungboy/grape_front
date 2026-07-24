@@ -1,5 +1,6 @@
 import axios from "axios";
 import { handleApiError } from "../errors/errorHandler";
+import { getCsrfToken } from "../utils/cookie";
 
 const apiClient = axios.create({
     baseURL: '/api',
@@ -51,5 +52,15 @@ apiClient.interceptors.response.use(
         return Promise.reject(handleApiError(error));
     }
 );
+
+apiClient.interceptors.request.use((config) => {
+    const csrfToken = getCsrfToken();
+
+    if(csrfToken){
+        config.headers["X-CSRF-TOKEN"] = csrfToken;
+    }
+
+    return config;
+})
 
 export default apiClient;
