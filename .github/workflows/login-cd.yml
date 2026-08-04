@@ -68,3 +68,73 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+  deploy:
+    name: Deploy to Production
+    needs:
+      - build-and-push
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Configure SSH
+        shell: bash
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.PROD_SSH_PRIVATE_KEY }}
+          SSH_HOST: ${{ secrets.PROD_SSH_HOST }}
+          SSH_PORT: ${{ secrets.PROD_SSH_PORT }}
+        run: |
+          install -m 700 -d ~/.ssh
+
+          printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+
+          ssh-keyscan -p "$SSH_PORT" -H "$SSH_HOST" >> ~/.ssh/known_hosts
+
+      - name: Deploy login frontend
+        shell: bash
+        env:
+          SSH_HOST: ${{ secrets.PROD_SSH_HOST }}
+          SSH_PORT: ${{ secrets.PROD_SSH_PORT }}
+          SSH_USER: ${{ secrets.PROD_SSH_USER }}
+          DEPLOY_IMAGE: ${{ needs.build-and-push.outputs.image }}
+          GHCR_USERNAME: ${{ github.actor }}
+          GHCR_TOKEN: ${{ secrets.GHCR_PAT }}
+        run: |
+          ssh \
+            -i ~/.ssh/id_ed25519 \
+            -p "$SSH_PORT" \
+            "$SSH_USER@$SSH_HOST" \
+            "DEPLOY_IMAGE='$DEPLOY_IMAGE' \
+            GHCR_USERNAME='$GHCR_USERNAME' \
+            GHCR_TOKEN='$GHCR_TOKEN' \
+            bash -s" <<'REMOTE'
+          set -Eeuo pipefail
+
+          cd /svc/marryoh
+
+          printf '%s' "$GHCR_TOKEN" |
+            docker login ghcr.io \
+              --username "$GHCR_USERNAME" \
+              --password-stdin
+
+          export CHAT_LOGIN_FRONTEND="$DEPLOY_IMAGE"
+
+          docker compose pull login-frontend
+          docker compose up -d --no-deps login-frontend
+
+          for attempt in $(seq 1 20); do
+            if docker inspect \
+              --format='{{json .State.Health.Status}}' \
+              marryoh-login-frontend 2>/dev/null |
+              grep -q '"healthy"'; then
+              echo "Login frontend deployment succeeded."
+              exit 0
+            fi
+
+            sleep 3
+          done
+
+          echo "Login frontend health check failed."
+          docker compose logs --tail=100 login-frontend
+          exit 1
+          REMOTE
