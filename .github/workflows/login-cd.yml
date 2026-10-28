@@ -19,7 +19,7 @@ concurrency:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository_owner }}/marryoh-login-frontend
+  IMAGE_NAME: ${{ github.repository_owner }}/grape-login-frontend
 
 jobs:
   build-and-push:
@@ -30,6 +30,9 @@ jobs:
       github.event.workflow_run.conclusion == 'success' &&
       github.event.workflow_run.event == 'push' &&
       github.event.workflow_run.head_branch == 'main'
+      
+    outputs:
+      image: ${{ steps.image.outputs.full_image }}
 
     steps:
       - name: Checkout tested commit
@@ -37,6 +40,15 @@ jobs:
         with:
           ref: ${{ github.event.workflow_run.head_sha }}
           persist-credentials: false
+
+      - name: Set deployment image
+        id: image
+        shell: bash
+        run: |
+          IMAGE="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}"
+          TAG="${{ github.event.workflow_run.head_sha }}"
+
+          echo "full_image=${IMAGE}:${TAG}" >> "$GITHUB_OUTPUT"
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -110,14 +122,14 @@ jobs:
             bash -s" <<'REMOTE'
           set -Eeuo pipefail
 
-          cd /svc/marryoh
+          cd /svc/grape
 
           printf '%s' "$GHCR_TOKEN" |
             docker login ghcr.io \
               --username "$GHCR_USERNAME" \
               --password-stdin
 
-          export CHAT_LOGIN_FRONTEND="$DEPLOY_IMAGE"
+          export LOGIN_FRONTEND_IMAGE="$DEPLOY_IMAGE"
 
           docker compose pull login-frontend
           docker compose up -d --no-deps login-frontend
@@ -125,7 +137,7 @@ jobs:
           for attempt in $(seq 1 20); do
             if docker inspect \
               --format='{{json .State.Health.Status}}' \
-              marryoh-login-frontend 2>/dev/null |
+              grape-login-frontend 2>/dev/null |
               grep -q '"healthy"'; then
               echo "Login frontend deployment succeeded."
               exit 0
