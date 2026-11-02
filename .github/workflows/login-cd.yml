@@ -112,6 +112,15 @@ jobs:
           GHCR_USERNAME: ${{ github.actor }}
           GHCR_TOKEN: ${{ secrets.GHCR_PAT }}
         run: |
+          set -Eeuo pipefail
+
+          echo "Deploy image from GitHub: $DEPLOY_IMAGE"
+
+          if [ -z "${DEPLOY_IMAGE:-}" ]; then
+            echo "ERROR: DEPLOY_IMAGE is empty."
+            exit 1
+          fi
+
           ssh \
             -i ~/.ssh/id_ed25519 \
             -p "$SSH_PORT" \
@@ -120,7 +129,15 @@ jobs:
             GHCR_USERNAME='$GHCR_USERNAME' \
             GHCR_TOKEN='$GHCR_TOKEN' \
             bash -s" <<'REMOTE'
+
           set -Eeuo pipefail
+
+          echo "Received deploy image: $DEPLOY_IMAGE"
+
+          if [ -z "${DEPLOY_IMAGE:-}" ]; then
+            echo "ERROR: DEPLOY_IMAGE was not received."
+            exit 1
+          fi
 
           cd /svc/grape
 
@@ -131,22 +148,50 @@ jobs:
 
           export LOGIN_FRONTEND_IMAGE="$DEPLOY_IMAGE"
 
+          echo "Resolved Docker Compose images:"
+          docker compose config --images
+
+          echo "Pulling login frontend..."
           docker compose pull login-frontend
+
+          echo "Starting login frontend..."
           docker compose up -d --no-deps login-frontend
 
+          echo "Running login image:"
+          docker inspect grape-login-frontend \
+            --format='{{.Config.Image}}'
+
           for attempt in $(seq 1 20); do
-            if docker inspect \
-              --format='{{json .State.Health.Status}}' \
-              grape-login-frontend 2>/dev/null |
-              grep -q '"healthy"'; then
+            STATUS="$(
+              docker inspect \
+                --format='{{if .State.Health}}{{.State.Health.Status}}{{else}}{{.State.Status}}{{end}}' \
+                grape-login-frontend 2>/dev/null \
+                || echo "not-found"
+            )"
+
+            echo "Health check ${attempt}/20: $STATUS"
+
+            if [ "$STATUS" = "healthy" ]; then
               echo "Login frontend deployment succeeded."
               exit 0
+            fi
+
+            if [ "$STATUS" = "unhealthy" ] \
+              || [ "$STATUS" = "exited" ] \
+              || [ "$STATUS" = "dead" ] \
+              || [ "$STATUS" = "not-found" ]; then
+              echo "ERROR: Login frontend deployment failed."
+              docker compose ps login-frontend || true
+              docker compose logs --tail=100 login-frontend || true
+              exit 1
             fi
 
             sleep 3
           done
 
-          echo "Login frontend health check failed."
-          docker compose logs --tail=100 login-frontend
+          echo "ERROR: Login frontend health check timed out."
+          docker compose ps login-frontend || true
+          docker compose logs --tail=100 login-frontend || true
           exit 1
+
           REMOTE
