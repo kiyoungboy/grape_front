@@ -30,7 +30,7 @@ jobs:
       github.event.workflow_run.conclusion == 'success' &&
       github.event.workflow_run.event == 'push' &&
       github.event.workflow_run.head_branch == 'main'
-      
+
     outputs:
       image: ${{ steps.image.outputs.full_image }}
 
@@ -45,10 +45,13 @@ jobs:
         id: image
         shell: bash
         run: |
+          set -Eeuo pipefail
+
           IMAGE="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}"
           TAG="${{ github.event.workflow_run.head_sha }}"
 
           echo "full_image=${IMAGE}:${TAG}" >> "$GITHUB_OUTPUT"
+          echo "Deployment image: ${IMAGE}:${TAG}"
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -80,6 +83,7 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
   deploy:
     name: Deploy to Production
     needs:
@@ -94,13 +98,80 @@ jobs:
           SSH_PRIVATE_KEY: ${{ secrets.PROD_SSH_PRIVATE_KEY }}
           SSH_HOST: ${{ secrets.PROD_SSH_HOST }}
           SSH_PORT: ${{ secrets.PROD_SSH_PORT }}
+          SSH_USER: ${{ secrets.PROD_SSH_USER }}
         run: |
-          install -m 700 -d ~/.ssh
+          set -Eeuo pipefail
 
-          printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
-          chmod 600 ~/.ssh/id_ed25519
+          echo "Checking SSH configuration..."
 
-          ssh-keyscan -p "$SSH_PORT" -H "$SSH_HOST" >> ~/.ssh/known_hosts
+          if [ -z "${SSH_HOST:-}" ]; then
+            echo "ERROR: PROD_SSH_HOST is empty."
+            exit 1
+          fi
+
+          if [ -z "${SSH_PORT:-}" ]; then
+            echo "ERROR: PROD_SSH_PORT is empty."
+            exit 1
+          fi
+
+          if [ -z "${SSH_USER:-}" ]; then
+            echo "ERROR: PROD_SSH_USER is empty."
+            exit 1
+          fi
+
+          if [ -z "${SSH_PRIVATE_KEY:-}" ]; then
+            echo "ERROR: PROD_SSH_PRIVATE_KEY is empty."
+            exit 1
+          fi
+
+          echo "SSH Host secret exists."
+          echo "SSH Port: $SSH_PORT"
+          echo "SSH User secret exists."
+
+          install -m 700 -d "$HOME/.ssh"
+
+          printf '%s\n' "$SSH_PRIVATE_KEY" > "$HOME/.ssh/id_ed25519"
+          chmod 600 "$HOME/.ssh/id_ed25519"
+
+          echo "Checking private key..."
+
+          if ! ssh-keygen -y \
+            -f "$HOME/.ssh/id_ed25519" \
+            > /dev/null; then
+
+            echo "ERROR: SSH private key is invalid."
+            exit 1
+          fi
+
+          echo "Private key OK."
+
+          echo "Scanning SSH server host key..."
+
+          if ! ssh-keyscan \
+            -T 10 \
+            -p "$SSH_PORT" \
+            -H "$SSH_HOST" \
+            > "$HOME/.ssh/known_hosts"; then
+
+            echo "ERROR: ssh-keyscan failed."
+            echo "Check PROD_SSH_HOST, PROD_SSH_PORT and router port forwarding."
+            exit 1
+          fi
+
+          chmod 600 "$HOME/.ssh/known_hosts"
+
+          echo "SSH host key scan OK."
+
+          echo "Testing SSH connection..."
+
+          ssh \
+            -i "$HOME/.ssh/id_ed25519" \
+            -o IdentitiesOnly=yes \
+            -o BatchMode=yes \
+            -o ConnectTimeout=10 \
+            -p "$SSH_PORT" \
+            "$SSH_USER@$SSH_HOST" \
+            "echo 'SSH connection OK'"
 
       - name: Deploy login frontend
         shell: bash
@@ -122,13 +193,15 @@ jobs:
           fi
 
           ssh \
-            -i ~/.ssh/id_ed25519 \
+            -i "$HOME/.ssh/id_ed25519" \
+            -o IdentitiesOnly=yes \
+            -o BatchMode=yes \
             -p "$SSH_PORT" \
             "$SSH_USER@$SSH_HOST" \
             "DEPLOY_IMAGE='$DEPLOY_IMAGE' \
-            GHCR_USERNAME='$GHCR_USERNAME' \
-            GHCR_TOKEN='$GHCR_TOKEN' \
-            bash -s" <<'REMOTE'
+             GHCR_USERNAME='$GHCR_USERNAME' \
+             GHCR_TOKEN='$GHCR_TOKEN' \
+             bash -s" <<'REMOTE'
 
           set -Eeuo pipefail
 
@@ -141,6 +214,8 @@ jobs:
 
           cd /svc/grape
 
+          echo "Logging in to GHCR..."
+
           printf '%s' "$GHCR_TOKEN" |
             docker login ghcr.io \
               --username "$GHCR_USERNAME" \
@@ -148,8 +223,8 @@ jobs:
 
           export LOGIN_FRONTEND_IMAGE="$DEPLOY_IMAGE"
 
-          echo "Resolved Docker Compose images:"
-          docker compose config --images
+          echo "Login frontend image:"
+          echo "$LOGIN_FRONTEND_IMAGE"
 
           echo "Pulling login frontend..."
           docker compose pull login-frontend
@@ -157,15 +232,20 @@ jobs:
           echo "Starting login frontend..."
           docker compose up -d --no-deps login-frontend
 
-          echo "Running login image:"
-          docker inspect grape-login-frontend \
+          echo "Running image:"
+          docker inspect \
+            grape-login-frontend \
             --format='{{.Config.Image}}'
 
+          echo "Waiting for health check..."
+
           for attempt in $(seq 1 20); do
+
             STATUS="$(
               docker inspect \
                 --format='{{if .State.Health}}{{.State.Health.Status}}{{else}}{{.State.Status}}{{end}}' \
-                grape-login-frontend 2>/dev/null \
+                grape-login-frontend \
+                2>/dev/null \
                 || echo "not-found"
             )"
 
@@ -173,16 +253,19 @@ jobs:
 
             if [ "$STATUS" = "healthy" ]; then
               echo "Login frontend deployment succeeded."
+              docker compose ps login-frontend
               exit 0
             fi
 
             if [ "$STATUS" = "unhealthy" ] \
               || [ "$STATUS" = "exited" ] \
-              || [ "$STATUS" = "dead" ] \
-              || [ "$STATUS" = "not-found" ]; then
+              || [ "$STATUS" = "dead" ]; then
+
               echo "ERROR: Login frontend deployment failed."
+
               docker compose ps login-frontend || true
               docker compose logs --tail=100 login-frontend || true
+
               exit 1
             fi
 
@@ -190,8 +273,10 @@ jobs:
           done
 
           echo "ERROR: Login frontend health check timed out."
+
           docker compose ps login-frontend || true
           docker compose logs --tail=100 login-frontend || true
+
           exit 1
 
           REMOTE
